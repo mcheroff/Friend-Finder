@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>The Survey</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1 class="text-center"><span class="glyphicon glyphicon-user"></span> Asking the important Questions</h1>
+            <hr>
+            <br>
+            <div class="text-center">
+                <a href="/api/theList">
+                    <button type="button" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-list-alt"></span> View Friends</button>
+                </a>
+                <a href="/index">
+                    <button type="button" class="btn btn-lg btn-default"><span class="glyphicon glyphicon-home"></span></button>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Friend Survey</h4>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="">Name (required)</label>
+                                <input type="text" class="form-control" id="friend_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="">Photo Image URL</label>
+                                <input type="text" class="form-control" id="friend_photo">
+                            </div>
+                            <h4>Using a scale from 1-5, how likely are you to : </h4>
+                            <div class="form-group">
+                                <label for="">Go skydiving:</label>
+                                <select id="a0" class="form-control">
+                                    <option>1 (Not Likely)</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5 (Very Likely)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Bungee jump off of a bridge:</label>
+                                <select id="a1" class="form-control">
+                                    <option>1 (Not Likely)</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5 (Very Likely)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Eat a sea urchin:</label>
+                                <select id="a2" class="form-control">
+                                    <option>1 (Not Likely)</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5 (Very Likely)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Read a book to completion:</label>
+                                <select id="a3" class="form-control">
+                                    <option>1 (Not Likely)</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5 (Very Likely)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Go crazy at a rock concert:</label>
+                                <select id="a4" class="form-control">
+                                    <option>1 (Not Likely)</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5 (Very Likely)</option>
+                                </select>
+                            </div>
+                            
+                        </form>
+                        <button class="btn btn-primary theButton">Submit</button>
+                    </div>
+                </div>
+                <div class="thePopup" style="position: absolute;display: none; margin-top: -40%; margin-left: 15%; background-color: white; padding: 100px; border: 5px solid black; border-radius: 25px;">
+                    <h1 class="popupText"></h1>
+                    <span class="popupImage"></span>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <p><a href="/api/theList">API Friends Link</a> | <a href="https://github.com/mcheroff/Friend-Finder">GitHub Repo</a></p>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+ 
+function displayPopup(htmldata,urldata) {
+    $(".popupText").text(htmldata);
+    $('.popupImage').html(urldata);
+    $(".thePopup").show(800, function() {
+        timeoutID = window.setTimeout(hideDiv, 8000);
+        function hideDiv() {
+            $(".thePopup").hide(800);
+        };
+    });
+};
+$(".theButton").on("click", function() {
+    
+    var newFriend = {
+        friendName: $('#friend_name').val().trim(),
+        friendPhoto: $('#friend_photo').val().trim(),
+        friendScores: []
+    };
+    for (i = 0; i < 10; i++) {
+        var newVal = $('#a' + i).val();
+        newFriend.friendScores.push(parseInt(newVal));
+    }
+    console.log(newFriend);
+    
+    var currentURL = window.location.origin;
+    $.post(currentURL + "/api/theList", newFriend,
+        function(data) {
+            console.log(data.friendName);
+            var sendTheMatch = "Your Best match is " + data.friendName;
+            var sendTheImage = '<img src = "'+ data.friendPhoto + '">';
+            displayPopup(sendTheMatch,sendTheImage);
+            
+            $('#friend_name').val("");
+            $('#friend_photo').val("");
+        });
+    event.preventDefault();
+});
+</script>
